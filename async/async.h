@@ -145,25 +145,8 @@ struct async { async_state; };
  * Condition to be used with await which returns true after a specified amount of time has elapsed.
  * @param duration The amount of time to wait before this condition returns true.
  */
-#define async_sleep(duration) _check_timer(_time, (duration))
+// #define async_sleep(duration) _check_timer(_time, (duration))
+#define async_sleep(duration) *_time = clock() + CLOCKS_PER_SEC * (duration); await(clock() >= *_time)
 
-/**
- * "Private" method to check if a timer is completed.
- * NOTE: I only need this because cond for await must be an expression and I don't know how to make a lambda in C.
- */
-bool _check_timer(clock_t *time, double duration) {
-    if (!*time) {
-        *time = clock();
-        return false;
-    }
-    else {
-        double elapsed = (double)(clock() - *time) / CLOCKS_PER_SEC;
-        if (elapsed >= duration) {
-            *time = 0;
-            return true;
-        }
-        else return false;
-    }
-}
 
 #endif
